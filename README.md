@@ -1,5 +1,5 @@
-## Machine Learning Courses
-# Different Machine Learning Techniques done with different programming languages
+# Machine Learning Courses
+## Different Machine Learning Techniques done with different programming languages
 
 
 
