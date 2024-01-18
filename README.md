@@ -28,6 +28,7 @@ This project is done with Python.
 *Remarks: Due to lack of data, the models yield subpar performance in testing.*
 
 Future Work: 
+
 1.) Increase quantity and quality of data.
 
 2.) Improve further the model, implement with different python packages
