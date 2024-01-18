@@ -9,19 +9,27 @@ This project is done with Python.
 
 **Machine learning models employed for Classification:**
 1.) Naive Bayes
+
 2.) Logistic Regression
+
 3.) Support Vector Machines
+
 4.) Multilayer Perceptron
+
 *Remarks: Due to lack of data, the models yield subpar performance in testing.*
 
 **Machine learning models employed for Regression:**
 1.) Support Vector Machine
+
 2.) Multilayer Perceptron
+
 *Remarks: Due to lack of data, the models yield subpar performance in testing.*
 
 Future Work: 
 1.) Increase quantity and quality of data.
+
 2.) Improve further the model, implement with different python packages
+
 3.) Extension: Use of thumbnails for future work.
 
 ## Removal of Projective Distortion in Images
