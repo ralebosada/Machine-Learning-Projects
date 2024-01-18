@@ -8,6 +8,7 @@ Solution: Using video titles and video statistics, the videos in youtube is clas
 This project is done with Python.
 
 **Machine learning models employed for Classification:**
+
 1.) Naive Bayes
 
 2.) Logistic Regression
@@ -19,6 +20,7 @@ This project is done with Python.
 *Remarks: Due to lack of data, the models yield subpar performance in testing.*
 
 **Machine learning models employed for Regression:**
+
 1.) Support Vector Machine
 
 2.) Multilayer Perceptron
@@ -38,8 +40,10 @@ Solution: Using base concepts of image processing and python, the images is tran
 This project is done in Python.
 
 **Solution 1: Core Concepts and Numpy**
+
 Using numpy, Projective Distortion Removal is done.
 *Remarks: Not finished*
 
 **Solution 2: OpenCV**
+
 Using OpenCV module in Python, Projective Distortion Removal is done.
