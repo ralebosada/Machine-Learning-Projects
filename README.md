@@ -7,7 +7,7 @@ Problem: Clickbait is common in Youtube.
 Solution: Using video titles and video statistics, the videos in youtube is classified if it is a clickbait or not using different machine learning models.
 This project is done with Python.
 
-**Machine learning models employed for Classification:**
+**Solution 1: Machine learning models employed for Classification:**
 
 1.) Naive Bayes
 
@@ -19,7 +19,7 @@ This project is done with Python.
 
 *Remarks: Due to lack of data, the models yield subpar performance in testing.*
 
-**Machine learning models employed for Regression:**
+**Solution 2:Machine learning models employed for Regression:**
 
 1.) Support Vector Machine
 
