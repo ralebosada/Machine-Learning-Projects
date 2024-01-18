@@ -43,6 +43,7 @@ This project is done in Python.
 **Solution 1: Core Concepts and Numpy**
 
 Using numpy, Projective Distortion Removal is done.
+
 *Remarks: Not finished*
 
 **Solution 2: OpenCV**
