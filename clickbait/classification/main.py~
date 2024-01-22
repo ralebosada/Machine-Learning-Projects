@@ -1,0 +1,187 @@
+from . import classification
+
+import pandas as pd
+import numpy as np
+import random
+from sklearn import preprocessing
+from sklearn.feature_extraction import text
+
+# Reading Excel File
+data = pd.read_excel('data.xlsx')
+
+# Extracting Features from Excel File
+title = data['Video Title'].to_numpy() # Titles of videos
+views = data['Views'].to_numpy() # Views of videos
+likes = data['Likes'].to_numpy() # Likes of videos
+dislikes = data['Dislikes'].to_numpy() # Dislikes of videos
+label = data['Label'].to_numpy() # Label of videos
+
+# Converting Title to Bag of Words
+vectorizer = text.CountVectorizer()
+
+
+# Summary of Data
+title_data = np.array(vectorizer.fit_transform(title).toarray())
+nontitle_data = np.stack((views, likes, dislikes))
+
+# Concatenating Data
+X = np.concatenate((np.transpose(nontitle_data), title_data), axis=1)
+
+scaler = preprocessing.StandardScaler()
+normalizer = preprocessing.Normalizer()
+maxabs = preprocessing.MaxAbsScaler()
+
+# Preprocessing of Data
+# X = maxabs.fit_transform(X) 
+# X = scaler.fit_transform(X)
+# X = normalizer.fit_transform(X)
+
+# Shuffling Data for Training
+ind = [i for i in range(np.shape(X)[0])]
+random.shuffle(ind)
+X = X[ind]
+y = label[ind]
+
+# Setting Training and Testing Data
+X_test, y_test = X[:56], y[:56]
+X_train, y_train = X[56:], y[56:]
+
+# Initialization of Clickbait Classification Class
+predictor = ClassicML(X_train, y_train)
+
+# Training for Naive Bayes Model
+
+train_NB, test_NB, model_NB, prob_train_NB, prob_test_NB = predictor.NaiveBayes(X_test)
+
+# Training for Logistic Regression Model
+
+param_grid_LR = {'max_iter': [1000, 5000, 10000],
+                    'C': [1, 10, 100],
+                     }
+
+train_LR, test_LR, model_LR, prob_train_LR, prob_test_LR = predictor.LogReg(X_test, param_grid=param_grid_LR, k_fold=5, scoring=None)
+
+# Training for Support Vector Machine Model
+
+param_grid_svm = {'max_iter': [1000, 5000, 10000],
+                  'probability': [True],
+                  'kernel': ['poly', 'rbf'],
+                  'degree': [5, 10, 15],
+                  'C': [1, 10, 100],
+                  }
+
+train_svm, test_svm, model_svm, prob_train_svm, prob_test_svm = predictor.SVM(X_test, param_grid=param_grid_svm, k_fold=5, scoring=None)
+
+# Training for Multilayer Perceptron Model with Scikit-Learn
+
+param_grid_mlp = {'max_iter': [1000, 5000, 10000],
+                  'hidden_layer_sizes': [150, 100, 50],
+                  'learning_rate_init': [0.0001, 0.001, 0.01, 0.1],
+                  }
+
+train_mlp, test_mlp, model_mlp, prob_train_mlp, prob_test_mlp = predictor.MLP(X_test, param_grid=param_grid_mlp, k_fold=5, scoring=None)
+
+######################################### RESULTS ###################################################
+
+from sklearn import metrics
+import matplotlib.pyplot as plt
+
+print("Training Results:")
+print(f"The NB model has an accuracy of {metrics.accuracy_score(y_train, train_NB)} and F1-Score of {metrics.f1_score(y_train, train_NB)}")
+print(f"The LR model has an accuracy of {metrics.accuracy_score(y_train, train_LR)} and F1-Score of {metrics.f1_score(y_train, train_LR)}")
+print(f"The SVM model has an accuracy of {metrics.accuracy_score(y_train, train_svm)} and F1-Score of {metrics.f1_score(y_train, train_svm)}")
+print(f"The MLP model has an accuracy of {metrics.accuracy_score(y_train, train_mlp)} and F1-Score of {metrics.f1_score(y_train, train_mlp)}")
+
+print("\n Testing Results:")
+print(f"The NB model has an accuracy of {metrics.accuracy_score(y_test, test_NB)} and F1-Score of {metrics.f1_score(y_test, test_NB)}")
+print(f"The LR model has an accuracy of {metrics.accuracy_score(y_test, test_LR)} and F1-Score of {metrics.f1_score(y_test, test_LR)}")
+print(f"The SVM model has an accuracy of {metrics.accuracy_score(y_test, test_svm)} and F1-Score of {metrics.f1_score(y_test, test_svm)}")
+print(f"The MLP model has an accuracy of {metrics.accuracy_score(y_test, test_mlp)} and F1-Score of {metrics.f1_score(y_test, test_mlp)}")
+
+# Results for Naive Bayes Model
+
+# Training
+cm_NB = metrics.confusion_matrix(y_train, train_NB)
+cm_NB_display = metrics.ConfusionMatrixDisplay(confusion_matrix=cm_NB, display_labels=[True, False])
+cm_NB_display.plot()
+print("Training Metrics \n")
+plt.show()
+print("\n", metrics.classification_report(y_train, train_NB, labels=[1,0], target_names=['Clickbait', 'Not Clickbait']))
+print(f"The Accuracy of the model in Training Data is {metrics.accuracy_score(y_train, train_NB)}")
+print(f"The F1-Score of the model in Training Data is {metrics.f1_score(y_train, train_NB)}")
+
+# Testing
+cm_NB_test = metrics.confusion_matrix(y_test, test_NB)
+cm_NB_display_test = metrics.ConfusionMatrixDisplay(confusion_matrix=cm_NB_test, display_labels=[True, False])
+cm_NB_display_test.plot()
+print("\n Testing Metrics \n")
+plt.show()
+print("\n", metrics.classification_report(y_test, test_NB, labels=[1,0], target_names=['Clickbait', 'Not Clickbait']))
+print(f"The Accuracy of the model in Test Data is {metrics.accuracy_score(y_test, test_NB)}")
+print(f"The F1-Score of the model in Test Data is {metrics.f1_score(y_test, test_NB)}")
+
+# Results for Logistic Regression Model
+
+# Training
+cm_LR = metrics.confusion_matrix(y_train, train_LR)
+cm_LR_display = metrics.ConfusionMatrixDisplay(confusion_matrix=cm_LR, display_labels=[True, False])
+cm_LR_display.plot()
+print("Training Metrics \n")
+plt.show()
+print("\n", metrics.classification_report(y_train, train_LR, labels=[1,0], target_names=['Clickbait', 'Not Clickbait']))
+print(f"The Accuracy of the model in Training Data is {metrics.accuracy_score(y_train, train_LR)}")
+print(f"The F1-Score of the model in Training Data is {metrics.f1_score(y_train, train_LR)}")
+
+#Testing
+cm_LR_test = metrics.confusion_matrix(y_test, test_LR)
+cm_LR_display_test = metrics.ConfusionMatrixDisplay(confusion_matrix=cm_LR_test, display_labels=[True, False])
+cm_LR_display_test.plot()
+print("Testing Metrics \n")
+plt.show()
+print("\n", metrics.classification_report(y_test, test_LR, labels=[1,0], target_names=['Clickbait', 'Not Clickbait']))
+print(f"The Accuracy of the model in Training Data is {metrics.accuracy_score(y_test, test_LR)}")
+print(f"The F1-Score of the model in Training Data is {metrics.f1_score(y_test, test_LR)}")
+
+# Results for Support Vector Machine Model
+
+# Training
+cm_svm = metrics.confusion_matrix(y_train, train_svm)
+cm_svm_display = metrics.ConfusionMatrixDisplay(confusion_matrix=cm_svm, display_labels=[True, False])
+cm_svm_display.plot()
+print("Training Metrics \n")
+plt.show()
+print("\n", metrics.classification_report(y_train, train_svm, labels=[1,0], target_names=['Clickbait', 'Not Clickbait']))
+print(f"The Accuracy of the model in Training Data is {metrics.accuracy_score(y_train, train_svm)}")
+print(f"The F1-Score of the model in Training Data is {metrics.f1_score(y_train, train_svm)}")
+
+# Testing
+cm_svm_test = metrics.confusion_matrix(y_test, test_svm)
+cm_svm_display_test = metrics.ConfusionMatrixDisplay(confusion_matrix=cm_svm_test, display_labels=[True, False])
+cm_svm_display_test.plot()
+print("Testing Metrics \n")
+plt.show()
+print("\n", metrics.classification_report(y_test, test_svm, labels=[1,0], target_names=['Clickbait', 'Not Clickbait']))
+print(f"The Accuracy of the model in Training Data is {metrics.accuracy_score(y_test, test_svm)}")
+print(f"The F1-Score of the model in Training Data is {metrics.f1_score(y_test, test_svm)}")
+
+# Results for Multilayer Perceptron
+
+# Training
+cm_mlp = metrics.confusion_matrix(y_train, train_mlp)
+cm_mlp_display = metrics.ConfusionMatrixDisplay(confusion_matrix=cm_mlp, display_labels=[True, False])
+print("Training Metrics \n")
+cm_svm_display.plot()
+plt.show()
+print("\n", metrics.classification_report(y_train, train_mlp, labels=[1,0], target_names=['Clickbait', 'Not Clickbait']))
+print(f"The Accuracy of the model in Training Data is {metrics.accuracy_score(y_train, train_mlp)}")
+print(f"The F1-Score of the model in Training Data is {metrics.f1_score(y_train, train_mlp)}")
+
+# Testing
+cm_mlp_test = metrics.confusion_matrix(y_test, test_mlp)
+cm_mlp_display_test = metrics.ConfusionMatrixDisplay(confusion_matrix=cm_mlp_test, display_labels=[True, False])
+print("Testing Metrics \n")
+cm_svm_display_test.plot()
+plt.show()
+print("\n", metrics.classification_report(y_test, test_mlp, labels=[1,0], target_names=['Clickbait', 'Not Clickbait']))
+print(f"The Accuracy of the model in Training Data is {metrics.accuracy_score(y_test, test_mlp)}")
+print(f"The F1-Score of the model in Training Data is {metrics.f1_score(y_test, test_mlp)}")
